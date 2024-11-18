@@ -22,28 +22,25 @@ class ResultsActivity : Activity() {
         if (!intent.hasExtra("USER_INPUT")) {
             val noResults = findViewById<TextView>(R.id.message)
             noResults.visibility = TextView.VISIBLE
-            noResults.text = "No se encontraron resultadoss"
+            noResults.text = "No se encontraron resultados"
             return
         }
 
-        if (!peliculasList.isEmpty() && peliculasList[0].nombre == "Error") {
+        if (peliculasList.isNotEmpty() && peliculasList[0].nombre == "Error") {
             val noResults = findViewById<TextView>(R.id.message)
             noResults.visibility = TextView.VISIBLE
             noResults.text = "No se pudo leer el archivo 'peliculas.json'. Se va a crear uno nuevo. Reemplace el archivo con uno con contenido válido." +
-                    "El archivo se encuentra en la siguiente ruta: ${filesDir}/peliculas.json"
-
+                    "El archivo se encuentra en la siguiente ruta: ${getExternalFilesDir(null)}/peliculas.json"
 
             val fileToDelete = File(filesDir, "peliculas.json")
             if (fileToDelete.exists()) {
-                System.out.println("Deleting file")
                 fileToDelete.delete()
             }
-            
-            var directory = "/data/data/com.example.doblaje/files"
-            val file = File(directory, "peliculas.json")
+
+            val file = File(getExternalFilesDir(null), "peliculas.json")
             file.writeText("{ \"peliculas\": [] }")
 
-            noResults.text = "Ahora el archivo se encuentra en la siguiente ruta: ${directory}/peliculas.json"
+            noResults.text = "Ahora el archivo se encuentra en la siguiente ruta:${getExternalFilesDir(null)}/peliculas.json"
             return
         }
 
@@ -56,69 +53,65 @@ class ResultsActivity : Activity() {
         if (filteredPeliculas.isEmpty()) {
             val noResults = findViewById<TextView>(R.id.message)
             noResults.visibility = TextView.VISIBLE
-            noResults.text = "No se encontraron resultados porque no se encontró ninguna película que contenga la palabra: \"$userInput\""
+            noResults.text = "No se encontraron resultados para '$userInput'"
         }
         tableLayout.removeAllViews()
+        val pelicula = filteredPeliculas[0]
+        val noResults = findViewById<TextView>(R.id.message)
+        noResults.visibility = TextView.VISIBLE
+        noResults.text = "Película: ${pelicula.nombre.replace("_", " ")} (${pelicula.año})"
+        var index = 0
+        for (actor in pelicula.actores) {
+            val row = TableRow(this)
+            row.layoutParams = TableRow.LayoutParams(
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT
+            )
+            row.background = resources.getDrawable(R.drawable.table_pelicula, null)
 
+            val cellActorOriginal = TextView(this)
+            cellActorOriginal.text = actor.actorOriginal
+            cellActorOriginal.textSize = 14f // Ajusta según tus necesidades
+            cellActorOriginal.setTypeface(null, android.graphics.Typeface.ITALIC)
+            cellActorOriginal.layoutParams = TableRow.LayoutParams(
+                0,
+                TableRow.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+            row.addView(cellActorOriginal)
 
-        if (filteredPeliculas.size == 1) {
-            val pelicula = filteredPeliculas[0]
-            val noResults = findViewById<TextView>(R.id.message)
-            noResults.visibility = TextView.VISIBLE
-            noResults.text = "Película: ${pelicula.nombre.replace("_", " ")} (${pelicula.año})"
-            var index = 0
-            for (actor in pelicula.actores) {
-                val row = TableRow(this)
-                row.layoutParams = TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
-                )
-                row.background = resources.getDrawable(R.drawable.table_pelicula, null)
-
-                val cellActorOriginal = TextView(this)
-                cellActorOriginal.text = actor.actorOriginal
-                cellActorOriginal.textSize = 14f // Ajusta según tus necesidades
-                cellActorOriginal.setTypeface(null, android.graphics.Typeface.ITALIC)
-                cellActorOriginal.layoutParams = TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
-                row.addView(cellActorOriginal)
-
-                val cellActorDoblaje = TextView(this)
-                cellActorDoblaje.text = actor.actorDoblaje
-                cellActorDoblaje.textSize = 14f // Ajusta según tus necesidades
-                cellActorDoblaje.setTypeface(null, android.graphics.Typeface.BOLD)
-                cellActorDoblaje.layoutParams = TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                ).apply {
-                    setMargins(10, 0, 10, 0)
-                }
-                row.addView(cellActorDoblaje)
-
-                val cellPersonaje = TextView(this)
-                cellPersonaje.text = actor.personaje
-                cellPersonaje.textSize = 14f // Ajusta según tus necesidades
-                cellPersonaje.setTypeface(null, android.graphics.Typeface.NORMAL)
-                cellPersonaje.layoutParams = TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
-                row.addView(cellPersonaje)
-
-                if (index % 2 == 0) {
-                    row.setBackgroundColor(ContextCompat.getColor(this, R.color.even_row_color))
-                } else {
-                    row.setBackgroundColor(ContextCompat.getColor(this, R.color.odd_row_color))
-                }
-
-                tableLayout.addView(row)
-                index++
+            val cellActorDoblaje = TextView(this)
+            cellActorDoblaje.text = actor.actorDoblaje
+            cellActorDoblaje.textSize = 14f // Ajusta según tus necesidades
+            cellActorDoblaje.setTypeface(null, android.graphics.Typeface.BOLD)
+            cellActorDoblaje.layoutParams = TableRow.LayoutParams(
+                0,
+                TableRow.LayoutParams.WRAP_CONTENT,
+                1f
+            ).apply {
+                setMargins(10, 0, 10, 0)
             }
+            row.addView(cellActorDoblaje)
+
+            val cellPersonaje = TextView(this)
+            cellPersonaje.text = actor.personaje
+            cellPersonaje.textSize = 14f // Ajusta según tus necesidades
+            cellPersonaje.setTypeface(null, android.graphics.Typeface.NORMAL)
+            cellPersonaje.layoutParams = TableRow.LayoutParams(
+                0,
+                TableRow.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+            row.addView(cellPersonaje)
+
+            if (index % 2 == 0) {
+                row.setBackgroundColor(ContextCompat.getColor(this, R.color.even_row_color))
+            } else {
+                row.setBackgroundColor(ContextCompat.getColor(this, R.color.odd_row_color))
+            }
+
+            tableLayout.addView(row)
+            index++
         }
 
         val button = findViewById<Button>(R.id.button)
@@ -128,12 +121,9 @@ class ResultsActivity : Activity() {
         }
     }
 
-    fun readJSONfromDevice(): List<Pelicula> {
+    private fun readJSONfromDevice(): List<Pelicula> {
         val filename = "peliculas.json"
-        val file = File(filesDir, filename)
-        if (!file.exists()) {
-            return listOf(Pelicula("Error", 0, listOf()))
-        }
+        val file = File(getExternalFilesDir(null), filename)
         val text = file.readText()
         val peliculasList: MutableList<Pelicula> = mutableListOf()
         val peliculas = JSONObject(text).getJSONArray("peliculas")
