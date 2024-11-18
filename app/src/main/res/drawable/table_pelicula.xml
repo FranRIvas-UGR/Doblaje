@@ -1,0 +1,24 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Borde exterior azul -->
+    <item android:bottom="10dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/> <!-- Fondo del borde -->
+            <corners android:radius="4dp"/>  <!-- Esquinas redondeadas -->
+            <stroke android:width="2dp" android:color="#0000FF"/> <!-- Grosor del borde -->
+        </shape>
+    </item>
+
+    <!-- Capa inferior: sombra interior azul -->
+    <item android:bottom="12dp" android:left="3dp" android:right="3dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#0000FF"/> <!-- Azul para los bordes internos -->
+        </shape>
+    </item>
+
+    <!-- Capa superior: fondo blanco interno -->
+    <item android:top="2dp" android:left="2dp" android:right="2dp" android:bottom="12dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/> <!-- Fondo blanco interno -->
+        </shape>
+    </item>
+</layer-list>
