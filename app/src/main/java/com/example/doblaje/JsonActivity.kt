@@ -18,7 +18,7 @@ class JsonActivity : Activity() {
         // Si el archivo peliculas.json ya existe, redirigir a MainActivity
         val file = File(getExternalFilesDir(null), "peliculas.json")
         if (file.exists()) {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, SelectActivity::class.java)
             startActivity(intent)
             finish() // Terminar esta actividad para evitar que el usuario vuelva atrás
             return
@@ -37,7 +37,7 @@ class JsonActivity : Activity() {
             val file = File(getExternalFilesDir(null), "peliculas.json")
             file.writeText("{ \"peliculas\": [] }")
             // Redirigir a MainActivity
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, SelectActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -80,7 +80,7 @@ class JsonActivity : Activity() {
             Toast.makeText(this, "Archivo cargado con éxito", Toast.LENGTH_SHORT).show()
 
             // Redirigir a MainActivity
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, SelectActivity::class.java)
             startActivity(intent)
             finish()
         } catch (e: Exception) {
