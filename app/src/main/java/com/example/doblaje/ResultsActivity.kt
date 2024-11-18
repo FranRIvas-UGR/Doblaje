@@ -43,10 +43,8 @@ class ResultsActivity : Activity() {
             noResults.text = "Ahora el archivo se encuentra en la siguiente ruta:${getExternalFilesDir(null)}/peliculas.json"
             return
         }
-
         val userInput = intent.getStringExtra("USER_INPUT")
         val tableLayout = findViewById<TableLayout>(R.id.tableLayout)
-        tableLayout.visibility = TableLayout.VISIBLE
         val filteredPeliculas = peliculasList.filter { pelicula ->
             pelicula.nombre.replace("_", " ").contains(userInput ?: "", ignoreCase = true)
         }
@@ -54,7 +52,9 @@ class ResultsActivity : Activity() {
             val noResults = findViewById<TextView>(R.id.message)
             noResults.visibility = TextView.VISIBLE
             noResults.text = "No se encontraron resultados para '$userInput'"
+            return
         }
+        tableLayout.visibility = TableLayout.VISIBLE
         tableLayout.removeAllViews()
         val pelicula = filteredPeliculas[0]
         val noResults = findViewById<TextView>(R.id.message)
