@@ -10,7 +10,7 @@ import android.content.Intent
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)        
+        setContentView(R.layout.activity_main)
 
         val editText = findViewById<EditText>(R.id.editText)
         val button = findViewById<Button>(R.id.button)
