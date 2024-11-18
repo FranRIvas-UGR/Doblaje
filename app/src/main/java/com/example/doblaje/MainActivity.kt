@@ -5,6 +5,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.app.Activity
 import android.content.Intent
+import android.widget.ImageButton
 
 
 class MainActivity : Activity() {
@@ -14,6 +15,12 @@ class MainActivity : Activity() {
 
         val editText = findViewById<EditText>(R.id.editText)
         val button = findViewById<Button>(R.id.button)
+
+        var backButton = findViewById<ImageButton>(R.id.backButton)
+        backButton.setOnClickListener {
+            val intent = Intent(this, SelectActivity::class.java)
+            startActivity(intent)
+        }
 
         button.setOnClickListener {
             val userInput = editText.text.toString()

@@ -10,6 +10,8 @@ import org.json.JSONObject
 import java.io.File
 import android.content.Intent
 import androidx.core.content.ContextCompat
+import android.widget.ImageButton
+import androidx.core.graphics.drawable.DrawableCompat
 
 class ResultsActivity : Activity() {
     private lateinit var peliculasList: List<Pelicula>
@@ -20,46 +22,138 @@ class ResultsActivity : Activity() {
         peliculasList = readJSONfromDevice()
 
         if (!intent.hasExtra("USER_INPUT")) {
-            val noResults = findViewById<TextView>(R.id.message)
-            noResults.visibility = TextView.VISIBLE
-            noResults.text = "No se encontraron resultados"
+            showMessage("No se encontraron resultados")
             return
         }
 
         if (peliculasList.isNotEmpty() && peliculasList[0].nombre == "Error") {
-            val noResults = findViewById<TextView>(R.id.message)
-            noResults.visibility = TextView.VISIBLE
-            noResults.text = "No se pudo leer el archivo 'peliculas.json'. Se va a crear uno nuevo. Reemplace el archivo con uno con contenido válido." +
-                    "El archivo se encuentra en la siguiente ruta: ${getExternalFilesDir(null)}/peliculas.json"
-
-            val fileToDelete = File(filesDir, "peliculas.json")
-            if (fileToDelete.exists()) {
-                fileToDelete.delete()
-            }
-
-            val file = File(getExternalFilesDir(null), "peliculas.json")
-            file.writeText("{ \"peliculas\": [] }")
-
-            noResults.text = "Ahora el archivo se encuentra en la siguiente ruta:${getExternalFilesDir(null)}/peliculas.json"
+            handleFileError()
             return
         }
+
         val userInput = intent.getStringExtra("USER_INPUT")
-        val tableLayout = findViewById<TableLayout>(R.id.tableLayout)
-        val filteredPeliculas = peliculasList.filter { pelicula ->
-            pelicula.nombre.replace("_", " ").contains(userInput ?: "", ignoreCase = true)
-        }
-        if (filteredPeliculas.isEmpty()) {
-            val noResults = findViewById<TextView>(R.id.message)
-            noResults.visibility = TextView.VISIBLE
-            noResults.text = "No se encontraron resultados para '$userInput'"
+        if (userInput == null) {
+            showMessage("Debe ingresar un nombre de película")
             return
         }
+
+        val realName = intent.getBooleanExtra("REAL_NAME", false)
+        val filteredPeliculas = filterPeliculas(userInput, realName)
+
+        if (filteredPeliculas.isEmpty()) {
+            showMessage("No se encontraron resultados para '$userInput'")
+            return
+        }
+
+        displayResults(filteredPeliculas, userInput)
+
+        var backButton = findViewById<ImageButton>(R.id.backButton)
+        backButton.setOnClickListener {
+            val intent = Intent(this, SelectActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun readJSONfromDevice(): List<Pelicula> {
+        val filename = "peliculas.json"
+        val file = File(getExternalFilesDir(null), filename)
+        val text = file.readText()
+        val peliculasList: MutableList<Pelicula> = mutableListOf()
+        val peliculas = JSONObject(text).getJSONArray("peliculas")
+        for (i in 0 until peliculas.length()) {
+            val pelicula = peliculas.getJSONObject(i)
+            val nombre = pelicula.getString("nombre")
+            val año = pelicula.getInt("año")
+            val actoresArray = pelicula.getJSONArray("actores")
+            val actoresList = mutableListOf<Actor>()
+            for (j in 0 until actoresArray.length()) {
+                val actor = actoresArray.getJSONObject(j)
+                val actorOriginal = actor.getString("actor_original")
+                val actorDoblaje = actor.getString("actor_doblaje")
+                val personaje = actor.getString("personaje")
+                actoresList.add(Actor(actorOriginal, actorDoblaje, personaje))
+            }
+            peliculasList.add(Pelicula(nombre, año, actoresList))
+        }
+
+        return peliculasList
+    }
+
+    private fun filterPeliculas(userInput: String, realName: Boolean): List<Pelicula> {
+        return if (realName) {
+            peliculasList.filter { pelicula ->
+                pelicula.nombre.equals(userInput, ignoreCase = true)
+            }
+        } else {
+            peliculasList.filter { pelicula ->
+                pelicula.nombre.replace("_", " ").contains(userInput, ignoreCase = true)
+            }
+        }
+    }
+
+    private fun displayResults(filteredPeliculas: List<Pelicula>, userInput: String) {
+        val tableLayout = findViewById<TableLayout>(R.id.tableLayout)
         tableLayout.visibility = TableLayout.VISIBLE
         tableLayout.removeAllViews()
-        val pelicula = filteredPeliculas[0]
-        val noResults = findViewById<TextView>(R.id.message)
-        noResults.visibility = TextView.VISIBLE
-        noResults.text = "Película: ${pelicula.nombre.replace("_", " ")} (${pelicula.año})"
+
+        if (filteredPeliculas.size > 1) {
+            showMessage("Se encontraron ${filteredPeliculas.size} resultados para '$userInput'. Por favor, elija uno.")
+            displayButtons(filteredPeliculas)
+        } else {
+            displayPeliculaDetails(filteredPeliculas[0])
+        }
+
+        val button = findViewById<Button>(R.id.button)
+        button.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun displayButtons(filteredPeliculas: List<Pelicula>) {
+        val buttonContainer = findViewById<TableLayout>(R.id.buttonContainer)
+        var index = 0
+        for (pelicula in filteredPeliculas) {
+            val button = Button(this)
+            button.text = pelicula.nombre.replace("_", " ")
+            button.textSize = 14f
+            button.setTextColor(ContextCompat.getColor(this, R.color.white))
+            val drawable = ContextCompat.getDrawable(this, R.drawable.rounded_button)?.mutate()
+            val wrappedDrawable = DrawableCompat.wrap(drawable!!) // Hacerlo "tintable"
+
+            // Cambiar el color dinámicamente según la posición
+            when (index % 4) {
+                0 -> DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(this, R.color.color1))
+                1 -> DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(this, R.color.color2))
+                2 -> DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(this, R.color.color3))
+                3 -> DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(this, R.color.color4))
+            }
+
+            // Aplicar el drawable tintado al botón
+            button.background = wrappedDrawable
+            val layoutParams = TableLayout.LayoutParams(
+                TableLayout.LayoutParams.WRAP_CONTENT,
+                TableLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 10, 0, 10)
+            }
+            button.layoutParams = layoutParams
+            button.setOnClickListener {
+                val intent = Intent(this, ResultsActivity::class.java)
+                intent.putExtra("USER_INPUT", pelicula.nombre)
+                intent.putExtra("REAL_NAME", true)
+                startActivity(intent)
+            }
+            buttonContainer.addView(button)
+            index++
+        }
+    }
+
+    private fun displayPeliculaDetails(pelicula: Pelicula) {
+        val tableLayout = findViewById<TableLayout>(R.id.tableLayout)
+        val messageTextView = findViewById<TextView>(R.id.message)
+        messageTextView.visibility = TextView.VISIBLE
+        messageTextView.text = "Película: ${pelicula.nombre.replace("_", " ")} (${pelicula.año})"
         var index = 0
         for (actor in pelicula.actores) {
             val row = TableRow(this)
@@ -113,37 +207,29 @@ class ResultsActivity : Activity() {
             tableLayout.addView(row)
             index++
         }
-
-        val button = findViewById<Button>(R.id.button)
-        button.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
     }
 
-    private fun readJSONfromDevice(): List<Pelicula> {
-        val filename = "peliculas.json"
-        val file = File(getExternalFilesDir(null), filename)
-        val text = file.readText()
-        val peliculasList: MutableList<Pelicula> = mutableListOf()
-        val peliculas = JSONObject(text).getJSONArray("peliculas")
-        for (i in 0 until peliculas.length()) {
-            val pelicula = peliculas.getJSONObject(i)
-            val nombre = pelicula.getString("nombre")
-            val año = pelicula.getInt("año")
-            val actoresArray = pelicula.getJSONArray("actores")
-            val actoresList = mutableListOf<Actor>()
-            for (j in 0 until actoresArray.length()) {
-                val actor = actoresArray.getJSONObject(j)
-                val actorOriginal = actor.getString("actor_original")
-                val actorDoblaje = actor.getString("actor_doblaje")
-                val personaje = actor.getString("personaje")
-                actoresList.add(Actor(actorOriginal, actorDoblaje, personaje))
-            }
-            peliculasList.add(Pelicula(nombre, año, actoresList))
+    private fun showMessage(message: String) {
+        val messageTextView = findViewById<TextView>(R.id.message)
+        messageTextView.visibility = TextView.VISIBLE
+        messageTextView.text = message
+    }
+
+    private fun handleFileError() {
+        val messageTextView = findViewById<TextView>(R.id.message)
+        messageTextView.visibility = TextView.VISIBLE
+        messageTextView.text = "No se pudo leer el archivo 'peliculas.json'. Se va a crear uno nuevo. Reemplace el archivo con uno con contenido válido." +
+                "El archivo se encuentra en la siguiente ruta: ${getExternalFilesDir(null)}/peliculas.json"
+
+        val fileToDelete = File(filesDir, "peliculas.json")
+        if (fileToDelete.exists()) {
+            fileToDelete.delete()
         }
 
-        return peliculasList
+        val file = File(getExternalFilesDir(null), "peliculas.json")
+        file.writeText("{ \"peliculas\": [] }")
+
+        messageTextView.text = "Ahora el archivo se encuentra en la siguiente ruta:${getExternalFilesDir(null)}/peliculas.json"
     }
 }
 
