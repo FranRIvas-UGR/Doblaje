@@ -19,6 +19,20 @@ class ResultsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_results)
+
+        var backButton = findViewById<ImageButton>(R.id.backButton)
+        backButton.setOnClickListener {
+            val intent = Intent(this, SelectActivity::class.java)
+            startActivity(intent)
+        }
+
+        var button = findViewById<Button>(R.id.button)
+        button.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+
         peliculasList = readJSONfromDevice()
 
         if (!intent.hasExtra("USER_INPUT")) {
@@ -47,11 +61,6 @@ class ResultsActivity : Activity() {
 
         displayResults(filteredPeliculas, userInput)
 
-        var backButton = findViewById<ImageButton>(R.id.backButton)
-        backButton.setOnClickListener {
-            val intent = Intent(this, SelectActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     private fun readJSONfromDevice(): List<Pelicula> {
