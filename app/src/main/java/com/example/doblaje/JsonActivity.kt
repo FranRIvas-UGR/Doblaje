@@ -19,6 +19,7 @@ class JsonActivity : Activity() {
         val file = File(getExternalFilesDir(null), "peliculas.json")
         if (file.exists()) {
             val intent = Intent(this, SelectActivity::class.java)
+            intent.putExtra("START", true)
             startActivity(intent)
             finish() // Terminar esta actividad para evitar que el usuario vuelva atrás
             return
