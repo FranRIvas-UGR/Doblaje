@@ -5,6 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.Toast
+import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TableLayout
+import org.json.JSONObject
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import java.io.File
 
 class SelectActivity : Activity() {
 
@@ -29,6 +38,70 @@ class SelectActivity : Activity() {
             Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
         }
 
+        
+
+        val buttonContainer = findViewById<LinearLayout>(R.id.buttonContainer)
+        val textView = findViewById<TextView>(R.id.message)
+        val file = File(this.getExternalFilesDir(null), "peliculas.json")
+
+        if (file.exists() && file.length() > 0) {
+            buttonContainer.visibility = View.VISIBLE
+            Thread {
+                // Leer y convertir el archivo a JSONObject
+                val json = JSONObject(file.readText())
+                
+                // Obtener el arreglo "peliculas"
+                val peliculasArray = json.getJSONArray("peliculas")
+                var index = 0
+                
+                // Actualizar la interfaz de usuario
+                runOnUiThread {
+                    for (i in 0 until 4) {
+                        val pelicula = peliculasArray.getJSONObject(i)
+                        val nombrePelicula = pelicula.getString("nombre")
+                        
+                        // Crear un botón para cada película
+                        val button = Button(this)
+                        button.text = nombrePelicula.replace("_", " ")
+                        button.textSize = 14f
+                        button.setTextColor(ContextCompat.getColor(this, R.color.white))
+                        val drawable = ContextCompat.getDrawable(this, R.drawable.rounded_button)?.mutate()
+                        val wrappedDrawable = DrawableCompat.wrap(drawable!!) // Hacerlo "tintable"
+
+                        // Cambiar el color dinámicamente según la posición
+                        when (index % 4) {
+                            0 -> DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(this, R.color.color1))
+                            1 -> DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(this, R.color.color2))
+                            2 -> DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(this, R.color.color3))
+                            3 -> DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(this, R.color.color4))
+                        }
+
+                        // Aplicar el drawable tintado al botón
+                        button.background = wrappedDrawable
+                        val layoutParams = TableLayout.LayoutParams(
+                            TableLayout.LayoutParams.WRAP_CONTENT,
+                            TableLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            setMargins(0, 10, 0, 10)
+                        }
+                        button.layoutParams = layoutParams
+                        button.setOnClickListener {
+                            val intent = Intent(this, ResultsActivity::class.java)
+                            intent.putExtra("USER_INPUT", nombrePelicula)
+                            intent.putExtra("IS_MOVIE", true)
+                            startActivity(intent)
+                        }
+                        buttonContainer.addView(button)
+                        index++
+                    }
+                }
+            }.start()
+            textView.visibility = View.VISIBLE
+        } else {
+            buttonContainer.visibility = View.GONE
+        }
+
+    
         //val btnSrchSurname = findViewById<Button>(R.id.btnSrchSurname)
         //val btnAddActor = findViewById<Button>(R.id.btnAddActor)
 
