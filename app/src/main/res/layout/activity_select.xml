@@ -139,7 +139,7 @@
             android:src="@drawable/add_movie" />
 
         <ImageButton
-            android:id="@+id/btnSrchName"
+            android:id="@+id/btnQueryActorByName"
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_weight="1"

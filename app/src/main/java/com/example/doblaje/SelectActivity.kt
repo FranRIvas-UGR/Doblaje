@@ -107,6 +107,7 @@ class SelectActivity : Activity() {
 
         val btnAddMovie = findViewById<ImageButton>(R.id.btnAddMovie)
         val btnQueryMovie = findViewById<ImageButton>(R.id.btnSrchMovie)
+        val btnQueryActorByName = findViewById<ImageButton>(R.id.btnQueryActorByName)
 
         btnAddMovie.setOnClickListener {
             val intent = Intent(this, AddMovieActivity::class.java)
@@ -118,11 +119,11 @@ class SelectActivity : Activity() {
             startActivity(intent)
         }
 
-        /* btnQueryActorByName.setOnClickListener {
-            val intent = Intent(this, NameActorActivity::class.java)
+         btnQueryActorByName.setOnClickListener {
+            val intent = Intent(this, SearchActorActivity::class.java)
             startActivity(intent)
         }
-
+        /*
         btnSrchSurname.setOnClickListener {
             val intent = Intent(this, SurnameActorActivity::class.java)
             startActivity(intent)
