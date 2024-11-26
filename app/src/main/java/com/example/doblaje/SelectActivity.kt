@@ -56,7 +56,7 @@ class SelectActivity : Activity() {
                 
                 // Actualizar la interfaz de usuario
                 runOnUiThread {
-                    for (i in 0 until 4) {
+                    for (i in peliculasArray.length() - 1 downTo peliculasArray.length() - 5) {
                         val pelicula = peliculasArray.getJSONObject(i)
                         val nombrePelicula = pelicula.getString("nombre")
                         
@@ -87,7 +87,9 @@ class SelectActivity : Activity() {
                         button.layoutParams = layoutParams
                         button.setOnClickListener {
                             val intent = Intent(this, ResultsActivity::class.java)
-                            intent.putExtra("USER_INPUT", nombrePelicula)
+                            val nombreSinGuiones = nombrePelicula.replace("_", " ")
+                            intent.putExtra("USER_INPUT", nombreSinGuiones)
+                            intent.putExtra("MOVIE_SEARCH", true)
                             intent.putExtra("IS_MOVIE", true)
                             startActivity(intent)
                         }

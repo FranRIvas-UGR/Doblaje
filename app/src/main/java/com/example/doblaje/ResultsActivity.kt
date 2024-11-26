@@ -51,13 +51,14 @@ class ResultsActivity : Activity() {
                 return
             }
 
-            val userInput = intent.getStringExtra("USER_INPUT")
+            var userInput = intent.getStringExtra("USER_INPUT")
             if (userInput == null || userInput == "") {
                 showMessage("Debe ingresar un nombre de película")
                 return
             }
 
             val realName = intent.getBooleanExtra("REAL_NAME", false)
+
             val filteredPeliculas = filterPeliculas(userInput, realName)
 
             if (filteredPeliculas.isEmpty()) {
@@ -339,7 +340,7 @@ class ResultsActivity : Activity() {
         val lista_peliculas = convertirActoresNombres(peliculasList)
         for (pelicula in lista_peliculas) {
             for (actor in pelicula.actores) {
-                if (actor.actorDoblaje.contains(actorNameUpper)) {
+                if (actor.actorDoblaje.equals(actorNameUpper, ignoreCase = true)) {
                     actorPeliculas.add(ActorPelicula(pelicula.nombre, pelicula.año, actor.personaje))
                 }
             }
@@ -354,7 +355,7 @@ fun convertirActoresNombres(peliculas: List<Pelicula>): List<Pelicula> {
         val actoresNuevos = mutableListOf<Actor>()
         for (actor in pelicula.actores) {
             val actorOriginal = actor.actorOriginal
-            val actorDoblaje = actor.actorDoblaje.split(", ").reversed().joinToString(" ") { it.capitalize() }
+            val actorDoblaje = actor.actorDoblaje.split(", ").reversed().joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } }
             val personaje = actor.personaje
             actoresNuevos.add(Actor(actorOriginal, actorDoblaje, personaje))
         }
