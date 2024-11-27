@@ -7,6 +7,14 @@
     android:background="@drawable/splash_2"
     tools:context=".ResultsActivity">
 
+    <View
+        android:id="@+id/backView3"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:background="#3F51B5"
+
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +23,44 @@
         android:background="@drawable/rounded_corners_card"
         android:elevation="6dp"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical" >
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="0dp"
+                android:gravity="center_horizontal"
+                android:text="Estas son las películas y series que has añadido recientemente"
+                android:textColor="#101010"
+                android:textSize="20sp"
+                android:visibility="invisible" />
+
+            <TableLayout
+                android:id="@+id/buttonContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:gravity="center_horizontal">
+            </TableLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_corners_card"
+        android:elevation="6dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/message"
@@ -83,18 +128,18 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/btnSrchMovie"
+            android:id="@+id/btnAddMovie"
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_weight="1"
             android:background="@drawable/taskbar_button_background"
-            android:contentDescription="Buscar por película o serie"
+            android:contentDescription="Añadir película o serie"
             android:padding="8dp"
             android:scaleType="centerInside"
-            android:src="@drawable/movie" />
+            android:src="@drawable/add_movie" />
 
         <ImageButton
-            android:id="@+id/btnSrchName"
+            android:id="@+id/btnQueryActorByName"
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_weight="1"
@@ -103,6 +148,8 @@
             android:padding="8dp"
             android:scaleType="centerInside"
             android:src="@drawable/user" />
+
+        
 
         <ImageButton
             android:id="@+id/btnSrchSurname"
@@ -114,6 +161,17 @@
             android:padding="8dp"
             android:scaleType="centerInside"
             android:src="@drawable/idcard" />
+
+        <ImageButton
+            android:id="@+id/btnSrchMovie"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_weight="1"
+            android:background="@drawable/taskbar_button_background"
+            android:contentDescription="Buscar por película o serie"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/movie" />
     </LinearLayout>
 
 </RelativeLayout>
