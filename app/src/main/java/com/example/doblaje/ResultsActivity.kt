@@ -239,6 +239,7 @@ class ResultsActivity : Activity() {
             button.setOnClickListener {
                 val intent = Intent(this, ResultsActivity::class.java)
                 intent.putExtra("USER_INPUT", pelicula.nombre)
+                intent.putExtra("MOVIE_SEARCH", true)
                 intent.putExtra("REAL_NAME", true)
                 startActivity(intent)
             }
