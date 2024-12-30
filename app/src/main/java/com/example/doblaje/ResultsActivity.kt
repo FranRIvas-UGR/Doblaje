@@ -74,8 +74,11 @@ class ResultsActivity : Activity() {
                 showMessage("Debe ingresar un nombre de actor")
                 return
             }
-
-            val filteredPeliculasActor = filterPeliculasByActorName(actorName)
+            var filteredPeliculasActor = emptyList<ActorPelicula>()
+            if (intent.hasExtra("REAL_ACTOR_NAME")) 
+                filteredPeliculasActor= filterPeliculasByActorName2(actorName)
+            else
+                filteredPeliculasActor = filterPeliculasByActorName(actorName)
             if (filteredPeliculasActor.isEmpty()) {
                 showMessage("No se encontraron resultados para '$actorName'")
                 return
@@ -273,9 +276,10 @@ class ResultsActivity : Activity() {
             )
             row.addView(cellActorOriginal)
 
-            val cellActorDoblaje = TextView(this)
+            val cellActorDoblaje = Button(this)
             cellActorDoblaje.text = actor.actorDoblaje
             cellActorDoblaje.textSize = 14f // Ajusta según tus necesidades
+            cellActorDoblaje.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent))
             cellActorDoblaje.setTypeface(null, android.graphics.Typeface.BOLD)
             cellActorDoblaje.layoutParams = TableRow.LayoutParams(
                 0,
@@ -283,6 +287,12 @@ class ResultsActivity : Activity() {
                 1f
             ).apply {
                 setMargins(10, 0, 10, 0)
+            }
+            cellActorDoblaje.setOnClickListener {
+                val intent = Intent(this, ResultsActivity::class.java)
+                intent.putExtra("ACTOR_NAME", actor.actorDoblaje)
+                intent.putExtra("REAL_ACTOR_NAME", true)
+                startActivity(intent)
             }
             row.addView(cellActorDoblaje)
 
@@ -339,6 +349,23 @@ class ResultsActivity : Activity() {
         val actorNameUpper = actorName.uppercase()
         val actorPeliculas = mutableListOf<ActorPelicula>()
         val lista_peliculas = convertirActoresNombres(peliculasList)
+        for (pelicula in lista_peliculas) {
+            for (actor in pelicula.actores) {
+                if (actor.actorDoblaje.equals(actorNameUpper, ignoreCase = true)) {
+                    actorPeliculas.add(ActorPelicula(pelicula.nombre, pelicula.año, actor.personaje))
+                }
+            }
+        }
+        return actorPeliculas
+    }
+
+    private fun filterPeliculasByActorName2(actorName: String?): List<ActorPelicula> {
+        if (actorName == null) {
+            return emptyList()
+        }
+        val actorNameUpper = actorName.uppercase()
+        val actorPeliculas = mutableListOf<ActorPelicula>()
+        val lista_peliculas = peliculasList
         for (pelicula in lista_peliculas) {
             for (actor in pelicula.actores) {
                 if (actor.actorDoblaje.equals(actorNameUpper, ignoreCase = true)) {
