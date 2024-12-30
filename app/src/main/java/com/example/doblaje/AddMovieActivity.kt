@@ -83,6 +83,7 @@ fun Activity.saveMovieToJSON(movie: MovieDetails): Boolean {
     }
     peliculasArray.add(JsonParser.parseString(json))
     file.writeText(gson.toJson(jsonObject))
+    ordenarJson(file)
     return true
 }
 
@@ -124,6 +125,17 @@ fun scrapeMovieDetails(url: String): MovieDetails {
         año = year,
         actores = actors
     )
+}
+
+fun ordenarJson(file: File) {
+    val gson = GsonBuilder().setPrettyPrinting().create()
+    val json = file.readText()
+    val jsonObject = JsonParser.parseString(json).asJsonObject
+    val peliculasArray = jsonObject.getAsJsonArray("peliculas")
+    val sortedArray = peliculasArray.sortedBy { it.asJsonObject.get("año").asString }
+    jsonObject.remove("peliculas")
+    sortedArray.forEach { jsonObject.getAsJsonArray("peliculas").add(it) }
+    file.writeText(gson.toJson(jsonObject))
 }
 
 data class MovieDetails(
