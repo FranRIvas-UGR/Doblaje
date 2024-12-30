@@ -133,8 +133,15 @@ fun ordenarJson(file: File) {
     val jsonObject = JsonParser.parseString(json).asJsonObject
     val peliculasArray = jsonObject.getAsJsonArray("peliculas")
     val sortedArray = peliculasArray.sortedBy { it.asJsonObject.get("año").asString }
+
+    // Crear un nuevo JsonArray y agregar los elementos ordenados
+    val newPeliculasArray = JsonArray()
+    sortedArray.forEach { newPeliculasArray.add(it) }
+
+    // Reemplazar el array antiguo con el nuevo array ordenado
     jsonObject.remove("peliculas")
-    sortedArray.forEach { jsonObject.getAsJsonArray("peliculas").add(it) }
+    jsonObject.add("peliculas", newPeliculasArray)
+
     file.writeText(gson.toJson(jsonObject))
 }
 
