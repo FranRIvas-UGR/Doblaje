@@ -104,7 +104,7 @@ class SelectActivity : Activity() {
         }
 
     
-        //val btnSrchSurname = findViewById<Button>(R.id.btnSrchSurname)
+        //val btnSrchSurname = findViewById<ImageButton>(R.id.btnSrchSurname)
         //val btnAddActor = findViewById<Button>(R.id.btnAddActor)
 
         val btnAddMovie = findViewById<ImageButton>(R.id.btnAddMovie)
@@ -122,13 +122,8 @@ class SelectActivity : Activity() {
         }
 
          btnQueryActorByName.setOnClickListener {
-            val intent = Intent(this, SearchActorActivity::class.java)
-            startActivity(intent)
-        }
-        /*
-        btnSrchSurname.setOnClickListener {
-            val intent = Intent(this, SurnameActorActivity::class.java)
-            startActivity(intent)
-        } */
+             val intent = Intent(this, SearchActorActivity::class.java)
+             startActivity(intent)
+         }
     }
 }
