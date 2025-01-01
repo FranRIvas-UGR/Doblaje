@@ -303,7 +303,7 @@ class ResultsActivity : Activity() {
             cellPersonaje.layoutParams = TableRow.LayoutParams(
                 0,
                 TableRow.LayoutParams.WRAP_CONTENT,
-                1f
+                1.5f
             )
             row.addView(cellPersonaje)
 

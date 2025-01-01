@@ -95,6 +95,7 @@ fun Activity.saveMovieToJSON(movie: MovieDetails): Boolean {
         return false
     }
     peliculasArray.add(JsonParser.parseString(json))
+
     file.writeText(gson.toJson(jsonObject))
     ordenarJson(file)
     return true
