@@ -23,8 +23,21 @@ class AddMovieActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_movie)
 
+        val intent = intent
+        val action = intent.action
+        val type = intent.type
+
         val editText = findViewById<EditText>(R.id.editText)
         val button = findViewById<Button>(R.id.button)
+
+        if (Intent.ACTION_SEND == action && type != null) {
+            if ("text/plain" == type) {
+                val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+                if (sharedText != null) {
+                    editText.setText(sharedText)
+                }
+            }
+        }
 
         val backButton = findViewById<ImageButton>(R.id.backButton)
         backButton.setOnClickListener {
