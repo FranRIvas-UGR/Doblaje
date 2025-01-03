@@ -18,9 +18,7 @@ class MainActivity : Activity() {
 
         var backButton = findViewById<ImageButton>(R.id.backButton)
         backButton.setOnClickListener {
-            val intent = Intent(this, SelectActivity::class.java)
-            intent.putExtra("START", false)
-            startActivity(intent)
+            finish()
         }
 
         button.setOnClickListener {

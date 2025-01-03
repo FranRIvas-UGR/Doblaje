@@ -80,13 +80,15 @@ class AddMovieActivity : Activity() {
 
 fun Activity.saveMovieToJSON(movie: MovieDetails): Boolean {
     val gson = GsonBuilder().setPrettyPrinting().create()
-    val json = gson.toJson(movie)
     val file = File(this.getExternalFilesDir(null), "peliculas.json")
     val jsonObject = if (file.exists()) {
         val existingJson = file.readText()
         JsonParser.parseString(existingJson).asJsonObject
     } else {
-        JsonObject().apply { add("peliculas", JsonArray()) }
+        JsonObject().apply {
+            add("peliculas", JsonArray())
+            add("ultimas_peliculas", JsonArray())
+        }
     }
 
     val peliculasArray = jsonObject.getAsJsonArray("peliculas")
@@ -94,12 +96,31 @@ fun Activity.saveMovieToJSON(movie: MovieDetails): Boolean {
     if (existingMovie != null) {
         return false
     }
-    peliculasArray.add(JsonParser.parseString(json))
 
+    // Crear el array "ultimas_peliculas" si no existe
+    if (!jsonObject.has("ultimas_peliculas")) {
+        jsonObject.add("ultimas_peliculas", JsonArray())
+    }
+
+    // Añadir la nueva película al array "películas"
+    peliculasArray.add(JsonParser.parseString(gson.toJson(movie)))
+
+
+    // Manejo del array "ultimas_peliculas"
+    val ultimasPeliculasArray = jsonObject.getAsJsonArray("ultimas_peliculas")
+    if (ultimasPeliculasArray.size() >= 4) {
+        // Si hay 4 películas, eliminar la primera
+        ultimasPeliculasArray.remove(0)
+    }
+    // Añadir la nueva película al final del array
+    ultimasPeliculasArray.add(JsonParser.parseString(gson.toJson(movie)))
+
+    // Actualizar el archivo JSON con los cambios
     file.writeText(gson.toJson(jsonObject))
     ordenarJson(file)
     return true
 }
+
 
 fun scrapeMovieDetails(url: String): MovieDetails {
     val doc: Document = try {

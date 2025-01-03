@@ -51,12 +51,27 @@ class SelectActivity : Activity() {
                 val json = JSONObject(file.readText())
                 
                 // Obtener el arreglo "peliculas"
-                val peliculasArray = json.getJSONArray("peliculas")
+                var peliculasArray = if (json.has("ultimas_peliculas")) {
+                    json.getJSONArray("ultimas_peliculas")
+                } else {
+                    json.getJSONArray("peliculas")
+                }
                 var index = 0
+                var inicio = 0
+                var final = peliculasArray.length()
                 
                 // Actualizar la interfaz de usuario
                 runOnUiThread {
-                    for (i in peliculasArray.length() - 1 downTo peliculasArray.length() - 5) {
+                    if (peliculasArray.length() == 0) {
+                        textView.text = "No hay películas disponibles recientemente"
+                        peliculasArray = json.getJSONArray("peliculas")
+                        inicio = peliculasArray.length() - 1
+                        final = inicio - 4
+
+                    } else {
+                        textView.text = "Últimas películas añadidas:"
+                    }
+                    for (i in inicio until final){
                         val pelicula = peliculasArray.getJSONObject(i)
                         val nombrePelicula = pelicula.getString("nombre")
                         

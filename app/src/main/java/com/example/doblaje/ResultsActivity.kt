@@ -255,7 +255,7 @@ class ResultsActivity : Activity() {
         val tableLayout = findViewById<TableLayout>(R.id.tableLayout)
         val messageTextView = findViewById<TextView>(R.id.message)
         messageTextView.visibility = TextView.VISIBLE
-        messageTextView.text = "Película: ${pelicula.nombre.replace("_", " ")} (${pelicula.año})"
+        messageTextView.text = "Resultados de ${pelicula.nombre.replace("_", " ")} (${pelicula.año})"
         var index = 0
         for (actor in pelicula.actores) {
             val row = TableRow(this)
@@ -272,7 +272,7 @@ class ResultsActivity : Activity() {
             cellActorOriginal.layoutParams = TableRow.LayoutParams(
                 0,
                 TableRow.LayoutParams.WRAP_CONTENT,
-                1f
+                1.2f
             )
             row.addView(cellActorOriginal)
 
@@ -284,7 +284,7 @@ class ResultsActivity : Activity() {
             cellActorDoblaje.layoutParams = TableRow.LayoutParams(
                 0,
                 TableRow.LayoutParams.WRAP_CONTENT,
-                1f
+                1.2f
             ).apply {
                 setMargins(10, 0, 10, 0)
             }
@@ -303,7 +303,7 @@ class ResultsActivity : Activity() {
             cellPersonaje.layoutParams = TableRow.LayoutParams(
                 0,
                 TableRow.LayoutParams.WRAP_CONTENT,
-                1.5f
+                1.2f
             )
             row.addView(cellPersonaje)
 

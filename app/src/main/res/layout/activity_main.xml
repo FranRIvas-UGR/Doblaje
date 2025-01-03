@@ -34,9 +34,10 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="Buscar Película"
-        android:textSize="24sp"
         android:textColor="#FFFFFF"
-        android:textStyle="bold" />
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:visibility="visible" />
 
     <LinearLayout
         android:layout_width="300dp"
